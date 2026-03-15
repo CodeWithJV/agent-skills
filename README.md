@@ -1,6 +1,6 @@
 # Code With JV Agent Skills
 
-Shared reusable agent skills for the Code With JV cohort.
+Shared reusable agent skills for the Code With JV students (and anyone else interested)
 
 Currently included:
 - `external-ai`
