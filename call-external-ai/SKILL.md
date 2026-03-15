@@ -1,5 +1,5 @@
 ---
-name: external-ai
+name: call-external-ai
 description: Call external AI CLIs like Codex and Gemini for second opinions, reviews, and alternative perspectives using natural language requests.
 ---
 
