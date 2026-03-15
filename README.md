@@ -7,6 +7,7 @@ These skills are designed to be readable, editable, and easy to install from a s
 ## Included skills
 
 - `call-external-ai`
+- `create-locked-down-skill`
 - `review-context-hub`
 - `retro`
 
@@ -29,12 +30,15 @@ Examples:
 ```bash
 npx skills add codewithjv/agent-skills --skill review-context-hub
 npx skills add codewithjv/agent-skills --skill retro
+npx skills add codewithjv/agent-skills --skill create-locked-down-skill
 ```
 
 ## What these are for
 
 - `call-external-ai`
   Call Codex or Gemini for second opinions, reviews, and alternative perspectives.
+- `create-locked-down-skill`
+  Scaffold a new workflow directory with locked-down permissions. Creates a `.claude/settings.local.json` that restricts tools to only what's needed, plus a `CLAUDE.md` with workflow instructions. Great for sandboxed, restricted workspaces.
 - `review-context-hub`
   Review a repo as a context hub: structure, recent changes, instructions, skills, remotes, and access.
 - `retro`
