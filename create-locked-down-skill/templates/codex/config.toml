@@ -1,0 +1,43 @@
+# Lockdown config for restricted workflow.
+# OS-level workspace sandbox + disabled shell/web/MCP + zero approval prompts.
+#
+# CUSTOMIZATION:
+#   MODEL          — change `model` to your preferred GPT model.
+#   WEB ACCESS     — set `web_search = "live"` and `network_access = true`.
+#   MCP SERVERS    — add `[mcp_servers.<name>] enabled = false` for each
+#                    server in your global ~/.codex/config.toml.
+#   FILE TYPES     — Codex has NO hard file-type enforcement. Add constraints
+#                    to AGENTS.md (soft guardrails, model compliance only).
+
+model = "gpt-5.4"
+approval_policy = "never"
+sandbox_mode = "workspace-write"
+allow_login_shell = false
+web_search = "disabled"
+file_opener = "none"
+personality = "pragmatic"
+
+[analytics]
+enabled = false
+
+[features]
+codex_hooks = false
+shell_tool = false
+apps = false
+apps_mcp_gateway = false
+multi_agent = false
+unified_exec = false
+
+# Disable global MCP servers — add one section per server in ~/.codex/config.toml.
+# Example:
+# [mcp_servers.browserplex]
+# enabled = false
+
+[sandbox_workspace_write]
+writable_roots = []
+network_access = false
+exclude_slash_tmp = true
+exclude_tmpdir_env_var = true
+
+[projects."__WORKFLOW_DIR__"]
+trust_level = "trusted"

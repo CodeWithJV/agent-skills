@@ -1,0 +1,119 @@
+# Lockdown policy for restricted workflow.
+# Only .md file operations within the workspace are allowed.
+# No shell, no web, no MCP, no memory tool.
+#
+# CUSTOMIZATION:
+#   ALLOWED EXTENSIONS — change the argsPattern regex (lines with \.md) for your workflow.
+#   PROTECTED FILES    — add config files to the protection rule (~line 25).
+#   WEB ACCESS         — to allow web, add WebSearchTool/WebFetchTool to tools.core in
+#                        settings.json and add allow rules for google_web_search/web_fetch.
+
+# ┌─────────────────────────────────────────────────────────────┐
+# │ DENY: Dangerous tools (defense-in-depth, tools.core is     │
+# │ the primary enforcer — these catch edge cases)              │
+# └─────────────────────────────────────────────────────────────┘
+
+[[rule]]
+toolName = "run_shell_command"
+decision = "deny"
+priority = 900
+deny_message = "Shell commands are disabled in this locked-down environment"
+
+[[rule]]
+toolName = "google_web_search"
+decision = "deny"
+priority = 900
+deny_message = "Web search is disabled in this locked-down environment"
+
+[[rule]]
+toolName = "web_fetch"
+decision = "deny"
+priority = 900
+deny_message = "Web fetch is disabled in this locked-down environment"
+
+[[rule]]
+toolName = "save_memory"
+decision = "deny"
+priority = 900
+deny_message = "Memory tool is disabled in this locked-down environment"
+
+[[rule]]
+toolName = "list_directory"
+decision = "deny"
+priority = 900
+deny_message = "Directory listing is disabled in this locked-down environment"
+
+[[rule]]
+mcpName = "*"
+decision = "deny"
+priority = 900
+deny_message = "MCP servers are disabled in this locked-down environment"
+
+# ┌─────────────────────────────────────────────────────────────┐
+# │ PROTECT: Config files are read-only                         │
+# │ Add any files that should not be writable by the agent.     │
+# └─────────────────────────────────────────────────────────────┘
+
+[[rule]]
+toolName = ["write_file", "replace"]
+argsPattern = '(CLAUDE|AGENTS|GEMINI)\.md"'
+decision = "deny"
+priority = 850
+deny_message = "Config files (CLAUDE.md, AGENTS.md, GEMINI.md) are read-only"
+
+# ┌─────────────────────────────────────────────────────────────┐
+# │ ALLOW: Permitted file operations (.md only)                 │
+# │ Change \.md to match your workflow's file types.            │
+# │ Examples: \.md  \.md|\.txt  \.md|\.json|\.yaml              │
+# └─────────────────────────────────────────────────────────────┘
+
+[[rule]]
+toolName = "read_file"
+argsPattern = '\.md"'
+decision = "allow"
+priority = 800
+
+[[rule]]
+toolName = "read_many_files"
+decision = "allow"
+priority = 800
+
+[[rule]]
+toolName = "write_file"
+argsPattern = '\.md"'
+decision = "allow"
+priority = 800
+
+[[rule]]
+toolName = "replace"
+argsPattern = '\.md"'
+decision = "allow"
+priority = 800
+
+[[rule]]
+toolName = ["glob", "search_file_content"]
+decision = "allow"
+priority = 800
+
+# ┌─────────────────────────────────────────────────────────────┐
+# │ DENY: Fallback — block non-.md file operations              │
+# │ Lower priority so allow rules above take precedence.        │
+# └─────────────────────────────────────────────────────────────┘
+
+[[rule]]
+toolName = "read_file"
+decision = "deny"
+priority = 700
+deny_message = "Only .md files can be read"
+
+[[rule]]
+toolName = "write_file"
+decision = "deny"
+priority = 700
+deny_message = "Only .md files can be written"
+
+[[rule]]
+toolName = "replace"
+decision = "deny"
+priority = 700
+deny_message = "Only .md files can be edited"

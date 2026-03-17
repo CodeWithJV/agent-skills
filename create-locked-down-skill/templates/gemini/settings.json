@@ -1,0 +1,40 @@
+{
+  "policyPaths": [
+    "__WORKFLOW_DIR__/.gemini/policies/lockdown.toml"
+  ],
+  "hooksConfig": {
+    "enabled": false,
+    "notifications": false
+  },
+  "tools": {
+    "core": [
+      "ReadFileTool",
+      "ReadManyFilesTool",
+      "GlobTool",
+      "GrepTool",
+      "WriteFileTool",
+      "EditTool"
+    ]
+  },
+  "security": {
+    "policy_engine": {
+      "enabled": true
+    },
+    "enableConseca": false,
+    "disableYoloMode": true,
+    "disableAlwaysAllow": false,
+    "blockGitExtensions": true,
+    "environmentVariableRedaction": {
+      "enabled": true
+    }
+  },
+  "admin": {
+    "secureModeEnabled": true,
+    "extensions": { "enabled": false },
+    "mcp": { "enabled": false },
+    "skills": { "enabled": false }
+  },
+  "general": {
+    "defaultApprovalMode": "auto_edit"
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "allowedMcpServers": [],
+  "permissions": {
+    "allow": [],
+    "deny": [
+      "Bash",
+      "Agent",
+      "Skill",
+      "NotebookEdit",
+      "WebSearch",
+      "WebFetch",
+      "ToolSearch",
+      "mcp__*",
+      "TaskCreate",
+      "TaskGet",
+      "TaskList",
+      "TaskOutput",
+      "TaskStop",
+      "TaskUpdate",
+      "SendMessage",
+      "CronCreate",
+      "CronDelete",
+      "CronList",
+      "EnterPlanMode",
+      "ExitPlanMode",
+      "EnterWorktree",
+      "ExitWorktree",
+      "AskUserQuestion",
+      "TeamCreate",
+      "TeamDelete",
+      "ListMcpResourcesTool",
+      "ReadMcpResourceTool",
+      "ReadMcpResource"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "__WORKFLOW_DIR__/.claude/hooks/block-all.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "__WORKFLOW_DIR__/.claude/hooks/dir-jail.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "__WORKFLOW_DIR__/.claude/hooks/dir-jail.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "__WORKFLOW_DIR__/.claude/hooks/dir-jail.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Glob",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "__WORKFLOW_DIR__/.claude/hooks/dir-jail.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "__WORKFLOW_DIR__/.claude/hooks/dir-jail.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+# Defense-in-depth: deny shell entrypoints if shell_tool is ever re-enabled.
+# Starlark rules only match shell command arguments — they cannot restrict
+# apply_patch (file writes). File-type restrictions must use AGENTS.md.
+prefix_rule(
+    pattern = [["bash", "sh", "zsh", "fish"]],
+    decision = "forbidden",
+    justification = "Shell execution is disabled in this workflow.",
+    match = [
+        "bash -lc ls",
+        "zsh -lc pwd",
+        "sh -c whoami",
+    ],
+)

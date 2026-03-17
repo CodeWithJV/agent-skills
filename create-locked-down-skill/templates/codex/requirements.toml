@@ -1,0 +1,15 @@
+# Constraint enforcement — pins allowed config values.
+# If anyone edits config.toml to weaken the lockdown, this file blocks it.
+
+allowedApprovalPolicies = ["never"]
+allowedSandboxModes = ["workspace-write"]
+allowedWebSearchModes = ["disabled"]
+
+[featureRequirements]
+apps = false
+apps_mcp_gateway = false
+codex_hooks = false
+multi_agent = false
+request_permissions_tool = false
+shell_tool = false
+unified_exec = false
