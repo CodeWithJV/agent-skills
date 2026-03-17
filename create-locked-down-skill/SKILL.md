@@ -1,6 +1,6 @@
 ---
 name: create-locked-down-skill
-description: Create a restricted workflow directory with locked-down permissions for Claude Code, Codex CLI, and Gemini CLI. Use when asked to set up a new workflow, create a sandboxed workspace, restrict permissions for a task, or scaffold a locked-down skill.
+description: Create a restricted workflow directory with locked-down permissions for Claude Code, Codex CLI, Gemini CLI, and OpenCode. Use when asked to set up a new workflow, create a sandboxed workspace, restrict permissions for a task, or scaffold a locked-down skill.
 allowed-tools:
   - Read
   - Write
@@ -12,7 +12,7 @@ allowed-tools:
 
 # Create Locked-Down Workflow
 
-Scaffold a new workflow directory with locked-down permissions for one or more AI coding agents: Claude Code, Codex CLI, and Gemini CLI.
+Scaffold a new workflow directory with locked-down permissions for one or more AI coding agents: Claude Code, Codex CLI, Gemini CLI, and OpenCode.
 
 ## When to Use
 
@@ -29,7 +29,7 @@ Ask the user for:
 
 1. **Name** — what to call the workflow (becomes the directory name under `workflows/`)
 2. **Purpose** — what the workflow does (becomes the instruction file content)
-3. **Which agents** — Claude Code, Codex CLI, Gemini CLI, or all three
+3. **Which agents** — Claude Code, Codex CLI, Gemini CLI, OpenCode, or all four
 4. **Allowed tools** — which tools should be permitted. Common sets:
    - **Research**: web search, web fetch, scoped reads, scoped writes for reports
    - **Writing**: scoped reads + scoped writes
@@ -55,7 +55,8 @@ workflows/<name>/
 │   ├── policies/
 │   │   └── lockdown.toml      # Gemini TOML policy rules
 │   └── GEMINI.md              # Gemini agent instructions
-├── AGENTS.md                   # Codex agent instructions
+├── opencode.json                # OpenCode permissions and tool config
+├── AGENTS.md                   # Codex + OpenCode agent instructions
 └── CLAUDE.md                   # Claude Code workflow instructions
 ```
 
@@ -609,6 +610,103 @@ Equivalent of CLAUDE.md. Soft guardrails — always pair with settings.json and 
 
 ---
 
+## OpenCode Configuration
+
+### Two-Layer Architecture
+
+OpenCode uses a simpler but effective lockdown model:
+
+1. **Tool toggles (hard enforcement)** — disable tools entirely via `"tools": { "bash": false }`. Disabled tools are invisible to the model — it cannot call them.
+2. **Permission patterns (hard enforcement)** — pattern-based `allow`/`deny` rules per tool. Denied operations return `PermissionDeniedError` at the tool level. The model sees the error and learns the restrictions.
+
+**No OS-level sandbox.** OpenCode relies on its own permission system, not a kernel sandbox. The `external_directory: "deny"` permission blocks access outside the project directory.
+
+### opencode.json
+
+File: `opencode.json` (project root). Supports JSONC (JSON with Comments). Config files merge — project config overrides global `~/.config/opencode/opencode.json`.
+
+### Tool Toggles
+
+Disable dangerous tools entirely — they become invisible to the model:
+
+```json
+{
+  "tools": {
+    "bash": false,
+    "webfetch": false,
+    "websearch": false,
+    "lsp": false,
+    "skill": false,
+    "todowrite": false,
+    "todoread": false,
+    "patch": false
+  }
+}
+```
+
+Available tools: `read`, `edit`, `write`, `bash`, `glob`, `grep`, `list`, `lsp`, `skill`, `todowrite`, `todoread`, `webfetch`, `websearch`, `patch`, `question`.
+
+### Permission Patterns
+
+Pattern-based rules with `allow`/`ask`/`deny`. **Last matching rule wins.**
+
+```json
+{
+  "permission": {
+    "read": {
+      "*": "deny",
+      "*.md": "allow"
+    },
+    "edit": {
+      "*": "deny",
+      "*.md": "allow",
+      "**/AGENTS.md": "deny",
+      "**/CLAUDE.md": "deny",
+      "**/GEMINI.md": "deny"
+    },
+    "write": {
+      "*": "deny",
+      "*.md": "allow",
+      "**/AGENTS.md": "deny",
+      "**/CLAUDE.md": "deny",
+      "**/GEMINI.md": "deny"
+    },
+    "glob": "allow",
+    "grep": "allow",
+    "list": "allow",
+    "bash": "deny",
+    "task": "deny",
+    "external_directory": "deny",
+    "doom_loop": "deny"
+  }
+}
+```
+
+### Critical Design Constraints
+
+**`"*": "deny"` as global default hides ALL tools from the model.** Unlike `"ask"` which keeps tools visible but prompts, `"deny"` completely removes tools from the model's function list. Do NOT use `"permission": { "*": "deny" }` if you want any tools visible. Instead, explicitly deny each unwanted tool.
+
+**`edit` and `write` need SEPARATE permission entries.** Despite docs saying "`edit` permission governs all file modifications: `edit`, `write`, `patch`, and `multiedit`", in practice pattern-based `edit` rules do NOT cover `write` tool calls. You MUST add both `"edit"` and `"write"` permission entries with the same patterns.
+
+**Config file protection patterns may need glob prefixes.** Simple patterns like `"AGENTS.md": "deny"` may not match if the model passes a full path. Use `"**/AGENTS.md": "deny"` for reliable matching.
+
+**Denied operations return `PermissionDeniedError` at the tool level.** The model sees the full ruleset in the error and learns the restrictions. This is a feedback loop — after seeing a denied write, the model stops trying.
+
+### Rules
+
+- **Disable tools via `tools` for hardest enforcement** — disabled tools don't exist for the model. Use for bash, web, MCP tools.
+- **Do NOT use `"*": "deny"` global permission** — it hides all tools, even ones you want available with restrictions.
+- **`edit` and `write` are separate permissions** — add both with identical patterns.
+- **Pattern-based permissions are hard enforcement** — they return `PermissionDeniedError`, not just model-compliance.
+- **`external_directory: "deny"` blocks access outside project dir** — this is OpenCode's equivalent of a workspace sandbox.
+- **`doom_loop: "deny"` prevents repeated tool calls** — stops the model from retrying denied operations.
+- **MCP servers are configurable** — set `"mcp": {}` to disable all, or disable specific ones with `"enabled": false`.
+- **AGENTS.md provides soft guardrails** — OpenCode reads AGENTS.md (same as Codex). Always include file-type constraints.
+- **Config merges, not replaces** — global config at `~/.config/opencode/opencode.json` is merged with project config. Override global settings explicitly.
+- To allow web access: set `"webfetch": true, "websearch": true` in tools and add permission allows.
+
+---
+
 ## Lessons Learned (from testing)
 
 ### Claude Code
@@ -659,15 +757,29 @@ Equivalent of CLAUDE.md. Soft guardrails — always pair with settings.json and 
 
 21. **`policyPaths` must be absolute** — the setting accepts an array of absolute paths to `.toml` policy files. Relative paths don't resolve.
 
+### OpenCode
+
+22. **`"*": "deny"` global permission hides all tools** — unlike `"ask"` which keeps tools visible, `"deny"` removes them from the model's function list entirely. Don't use it as a global default if you need any tools to be visible with restrictions.
+
+23. **`edit` and `write` need separate permission entries** — despite docs claiming `edit` governs all file modifications, pattern-based `edit` rules don't apply to `write` tool calls. Always add both.
+
+24. **Pattern-based permissions are hard enforcement** — `PermissionDeniedError` is returned at the tool level. The model sees the error message containing the full ruleset and stops retrying.
+
+25. **Config file protection patterns need glob prefixes** — simple `"AGENTS.md": "deny"` may not match if the model passes a full path. Use `"**/AGENTS.md": "deny"` for reliability.
+
+26. **Disabled tools are invisible** — `"tools": { "bash": false }` is the strongest enforcement. The model has no function to call.
+
+27. **OpenCode TUI needs Enter twice from tmux** — first Enter types into the input editor, second Enter submits. The TUI uses Bubble Tea with a multiline editor.
+
 ### General
 
-22. **Always layer soft + hard guardrails** — instruction files (CLAUDE.md, AGENTS.md, GEMINI.md) are advisory. Always pair with hard enforcement (settings.json, hooks, sandbox, policies).
+28. **Always layer soft + hard guardrails** — instruction files (CLAUDE.md, AGENTS.md, GEMINI.md) are advisory. Always pair with hard enforcement (settings.json, hooks, sandbox, policies).
 
-23. **Block MCP on all agents** — MCP servers can bypass other restrictions. Claude Code: catch-all hook + deny list. Codex: explicitly disable each global MCP server with `enabled = false` in project config. Gemini: `admin.mcp.enabled: false` + policy deny on `mcpName = "*"`.
+29. **Block MCP on all agents** — MCP servers can bypass other restrictions. Claude Code: catch-all hook + deny list. Codex: explicitly disable each global MCP server with `enabled = false` in project config. Gemini: `admin.mcp.enabled: false` + policy deny on `mcpName = "*"`. OpenCode: `"mcp": {}` in config.
 
-24. **Test the lockdown** — after creating configs, launch each agent inside the directory and run adversarial tests: read outside dir, write outside dir, shell access, MCP tools, read non-allowed file types, write to config files, spawn subagents. Verify zero user prompts appear.
+30. **Test the lockdown** — after creating configs, launch each agent inside the directory and run adversarial tests: read outside dir, write outside dir, shell access, MCP tools, read non-allowed file types, write to config files, spawn subagents. Verify zero user prompts appear.
 
-25. **Each agent has a different security model** — Claude Code uses hook-based hard enforcement (every tool call intercepted). Codex uses OS-level sandbox + soft guardrails (kernel boundary is hard, file-type restrictions are soft). Gemini uses tool allowlisting + model compliance (tools removed from model + model self-censoring from policy).
+31. **Each agent has a different security model** — Claude Code uses hook-based hard enforcement (every tool call intercepted). Codex uses OS-level sandbox + soft guardrails (kernel boundary is hard, file-type restrictions are soft). Gemini uses tool allowlisting + model compliance (tools removed from model + model self-censoring from policy). OpenCode uses tool toggles + pattern-based permissions (tools disabled = invisible, permissions = hard deny with error feedback).
 
 ---
 
@@ -678,7 +790,8 @@ Equivalent of CLAUDE.md. Soft guardrails — always pair with settings.json and 
 3. For Claude: `.claude/settings.json` with empty allow list + deny list for non-file tools + two-hook architecture (`block-all.sh` catch-all + `dir-jail.sh` per-tool)
 4. For Codex: `.codex/config.toml` with `workspace-write` sandbox + `approval_policy = "never"` + `shell_tool = false` + `.codex/requirements.toml` + `.codex/rules/default.rules` + explicitly disable global MCP servers + AGENTS.md with file-type constraints
 5. For Gemini: `.gemini/settings.json` with `tools.core` allowlist + `auto_edit` mode + `disableAlwaysAllow: false` + `.gemini/policies/lockdown.toml` with priority-layered deny/allow/fallback rules
-6. Write instruction files: `CLAUDE.md`, `AGENTS.md`, `.gemini/GEMINI.md`
+6. For OpenCode: `opencode.json` with `tools` toggles to disable dangerous tools + pattern-based `permission` for file-type restrictions + `"mcp": {}` + AGENTS.md with file-type constraints
+7. Write instruction files: `CLAUDE.md`, `AGENTS.md`, `.gemini/GEMINI.md`
 7. Confirm plan with user before writing
 8. Test all agents inside the directory — verify zero user prompts
 
@@ -698,6 +811,8 @@ templates/
 │   ├── requirements.toml          # Constraint enforcement (pins allowed settings)
 │   └── rules/
 │       └── default.rules          # Starlark shell deny (defense-in-depth)
+├── opencode/
+│   └── opencode.json              # Tool toggles + pattern-based permissions
 └── gemini/
     ├── settings.json              # __WORKFLOW_DIR__ placeholder for policy path
     └── policies/
@@ -709,3 +824,4 @@ After copying:
 - For Claude: `chmod +x` the hook scripts
 - For Codex: add `[mcp_servers.<name>] enabled = false` for each MCP server in your global `~/.codex/config.toml`
 - For Codex: add file-type constraints to AGENTS.md (soft guardrails — Codex has no hard file-type enforcement)
+- For OpenCode: change `"model"` to your preferred model (format: `provider/model-id`)

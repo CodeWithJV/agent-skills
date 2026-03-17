@@ -1,0 +1,54 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  // Lockdown config for restricted workflow.
+  // Only .md file operations within the workspace. No shell, no web, no MCP.
+  //
+  // CUSTOMIZATION:
+  //   MODEL           — change "model" to your preferred provider/model-id.
+  //   ALLOWED EXTENSIONS — change "*.md" patterns for your workflow.
+  //   PROTECTED FILES — add "**/filename": "deny" entries.
+  //   WEB ACCESS      — set webfetch/websearch to true in tools, add permission allows.
+  "model": "anthropic/claude-haiku-4-5",
+  "tools": {
+    "bash": false,
+    "webfetch": false,
+    "websearch": false,
+    "lsp": false,
+    "skill": false,
+    "todowrite": false,
+    "todoread": false,
+    "patch": false
+  },
+  "permission": {
+    "read": {
+      "*": "deny",
+      "*.md": "allow"
+    },
+    "edit": {
+      "*": "deny",
+      "*.md": "allow",
+      "**/AGENTS.md": "deny",
+      "**/CLAUDE.md": "deny",
+      "**/GEMINI.md": "deny"
+    },
+    "write": {
+      "*": "deny",
+      "*.md": "allow",
+      "**/AGENTS.md": "deny",
+      "**/CLAUDE.md": "deny",
+      "**/GEMINI.md": "deny"
+    },
+    "glob": "allow",
+    "grep": "allow",
+    "list": "allow",
+    "bash": "deny",
+    "webfetch": "deny",
+    "websearch": "deny",
+    "task": "deny",
+    "external_directory": "deny",
+    "doom_loop": "deny"
+  },
+  "mcp": {},
+  "share": "disabled",
+  "autoupdate": false
+}
