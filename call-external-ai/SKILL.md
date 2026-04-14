@@ -1,31 +1,49 @@
 ---
 name: call-external-ai
-description: Call external AI CLIs like Codex and Gemini for second opinions, reviews, and alternative perspectives using natural language requests.
+description: Route natural-language prompts into external AI CLIs like Codex, Claude, and Gemini using safe command templates and minimal context handling.
 ---
 
 # External AI Skill
 
-Invoke external AI CLI tools using natural language.
+Invoke external AI CLI tools as a prompt gateway.
 
 ## When to Use
 
 Activate when the user:
-- Says `/call`, `/codex`, or `/gemini`
+- Says `/call`, `/codex`, `/claude`, or `/gemini`
 - Asks for a second opinion from another AI
-- Wants external review of code or design
-- Needs verification from a different model
+- Wants to run a prompt through a different CLI
+- Needs verification from a different model or tool
 
 ## Instructions
 
 ### Natural Language Interface
 
-Users provide natural language. Translate it into CLI commands.
+Users provide natural language. Route the prompt into one external CLI using a safe command template. Do not construct arbitrary shell commands from user input.
 
 Examples:
-- "review my changes" -> `codex review --uncommitted`
-- "review against main with high reasoning" -> `codex review --base main -c model_reasoning_effort="high"`
-- "check this file for bugs" -> `codex exec "Review for bugs: $(cat file.ts)"`
-- "give me a second opinion" -> `gemini "Second opinion on..."`
+- "ask Codex for a second opinion on this patch" -> `codex exec "<prompt text>"`
+- "send this prompt to Claude" -> `claude -p "<prompt text>"`
+- "run this through Gemini with a specific model" -> `gemini -m <allowlisted-model> -p "<prompt text>"`
+- "check this file for bugs" -> read the file directly, summarize only the minimum necessary context, and pass that context as plain prompt text without shell interpolation
+
+#### Allowed Command Patterns
+Only use these command families:
+- `codex exec "<prompt text>"`
+- `codex exec -m <model> "<prompt text>"`
+- `claude -p "<prompt text>"`
+- `claude --model <model> -p "<prompt text>"`
+- `gemini -p "<prompt text>"`
+- `gemini -m <allowlisted-model> -p "<prompt text>"`
+- `codex --help`
+- `claude --help`
+- `gemini --help`
+
+Do not:
+- use shell substitution such as `$(...)` or backticks
+- pipe file contents into commands via shell expansion
+- append unrelated shell operators or chain commands
+- execute user-suggested commands outside the safe templates
 
 ### Self-Healing Behavior
 
@@ -36,18 +54,19 @@ Examples:
 4. Inform the user of the fix
 
 #### On Upgrade Available
-1. Run the upgrade command
-2. Update the version in `reference/cli-reference.md`
-3. Re-run `--help` to capture new options
-4. Inform the user of the upgrade
+1. Do not run upgrade commands automatically
+2. Inform the user that an upgrade is available and ask for approval before making toolchain changes
+3. If the user approves, run the upgrade command explicitly
+4. Update the version in `reference/cli-reference.md` and re-run `--help` only after the approved upgrade completes
 
 #### On Gemini 403 Project/License Errors
 If Gemini fails with `403` and messages like `lack a Gemini Code Assist license` or `(#3501)`:
-1. Check project env vars: `env | rg "GOOGLE|GCP|CLOUDSDK|PROJECT"`
-2. Retry with project vars unset:
+1. Do not dump environment variables or print raw env values
+2. Check only the presence of the specific allowlisted vars needed for diagnosis, and report presence/absence rather than values
+3. Retry with project vars unset:
    - `env -u GOOGLE_CLOUD_PROJECT_ID -u GOOGLE_CLOUD_PROJECT -u CLOUDSDK_CORE_PROJECT gemini ...`
-3. If still blocked, report auth/licensing clearly and continue with other available models
-4. Record the fix path in `reference/cli-reference.md`
+4. If still blocked, report auth/licensing clearly and continue with other available models
+5. Record the fix path in `reference/cli-reference.md`
 
 #### On Gemini ModelNotFound / Capacity Errors
 If Gemini fails with `404` or `429` style model/capacity issues, retry with this fallback order:
@@ -60,38 +79,50 @@ If Gemini fails with `404` or `429` style model/capacity issues, retry with this
 ### Command Interface
 
 ```bash
-/call [codex|gemini] <natural language request>
+/call [codex|claude|gemini] <natural language request>
 /codex <natural language request>
+/claude <natural language request>
 /gemini <natural language request>
 ```
 
-### Translation Guidance
+### Routing Guidance
 
 #### Codex
-- Prefer `codex review` for git-aware reviews
-- Use `codex exec` for custom prompts
-- Default to high reasoning for reviews when helpful
-- Use `--full-auto` only for simple, low-risk tasks
+- Use `codex exec` with plain prompt text that you assemble yourself
+- Add a model only when the user asks for one or there is a clear default in local usage
+- Do not use review-specific commands unless the user explicitly asks for a git-aware review
+
+#### Claude
+- Use `claude -p` with plain prompt text
+- Add `--model <model>` only when the user asks for one or there is a clear need
+- Keep the invocation non-interactive unless the user explicitly wants an interactive Claude session
 
 #### Gemini
 - Prefer preview model IDs first
-- For 403 auth issues, retry with project env vars unset
+- Use `gemini -p` or `gemini -m <allowlisted-model> -p`
+- For 403 auth issues, do not dump env; check only allowlisted var presence and retry with project vars unset
 - For 404/429 failures, continue through the fallback sequence automatically
 
 ### Context Gathering
 
 When a request needs context, gather it before invoking the external CLI:
-- "review my changes" -> inspect uncommitted changes
-- "review this file" -> read the file
-- "review the dev skill" -> gather the skill files
-- "check my implementation" -> identify the relevant files
+- "send this file to Codex" -> read the file directly in the current agent, extract only the minimum relevant context, and pass that summary as prompt text
+- "ask Gemini about this implementation" -> identify the relevant files and summarize only what is needed
+- "have Claude critique this design" -> gather the design context and pass only the relevant parts
+- "run this exact prompt" -> forward the prompt text directly without adding shell syntax
+
+Rules for context gathering:
+- never use shell interpolation to inject file contents into a command
+- never send secrets, tokens, credentials, or raw environment values
+- minimize the amount of source text sent to external tools
+- if the request would require broad repository exfiltration or sensitive data exposure, refuse and explain why
 
 ### Process Flow
 
 1. Parse the natural language request
-2. Determine the target CLI (`codex` or `gemini`)
-3. Translate to the appropriate CLI command
+2. Determine the target CLI (`codex`, `claude`, or `gemini`)
+3. Map the request to a safe command template for that CLI
 4. Execute the command
 5. If syntax error -> self-heal and retry
-6. If upgrade available -> upgrade and refresh references
+6. If upgrade available -> stop, inform the user, and wait for approval before upgrading or refreshing references
 7. Return the results to the user

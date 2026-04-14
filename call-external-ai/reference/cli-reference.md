@@ -5,9 +5,8 @@
 ### Key Commands
 
 ```bash
-codex review --uncommitted
-codex review --base main
-codex exec "Analyze: $(cat file)"
+codex exec "Analyze the following prompt: ..."
+codex exec -m gpt-5.4 "Analyze the following prompt: ..."
 codex resume
 ```
 
@@ -16,8 +15,25 @@ codex resume
 ```bash
 -m, --model <MODEL>
 -c model_reasoning_effort="high"
---full-auto
 -s, --sandbox <MODE>
+```
+
+## Claude CLI
+
+### Key Commands
+
+```bash
+claude -p "Analyze the following prompt: ..."
+claude --model sonnet -p "Analyze the following prompt: ..."
+claude --resume latest
+```
+
+### Useful Options
+
+```bash
+--model <MODEL>
+-p, --print
+--permission-mode <MODE>
 ```
 
 ## Gemini CLI
@@ -25,10 +41,18 @@ codex resume
 ### Key Commands
 
 ```bash
-gemini -m gemini-3.1-pro-preview -p "Review: ..."
-gemini -y "..."
+gemini -p "Analyze the following prompt: ..."
+gemini -m gemini-3.1-pro-preview -p "Analyze the following prompt: ..."
 gemini -r latest
 ```
+
+## Safety Rules
+
+- Use only safe command templates documented by the skill.
+- Do not use shell substitution such as `$(...)` or backticks.
+- Do not dump environment variables or print secret values.
+- Read files directly in the current agent, then pass only minimal necessary prompt text to external CLIs.
+- Do not chain commands or append unrelated shell operators.
 
 ### Fallback Model Order
 
