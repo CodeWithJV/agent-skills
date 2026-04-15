@@ -20,3 +20,13 @@
 
 - Updated `reference/cli-reference.md` to document safe prompt templates for Codex, Claude, and Gemini.
 - Removed review-biased command examples from the reference and aligned the documented patterns with the hardened skill behavior.
+
+### Installation And Verification
+
+- Synced the installed `external-ai` skill into the local Claude and Agents skill directories using the hardened prompt-gateway definition.
+- Installed the same skill into Gemini's local skill tree so Gemini can resolve the prompt-gateway behavior from its own environment.
+- Verified the expected prompt templates across all three CLIs:
+  - Codex: `codex exec "<prompt text>"`
+  - Claude: `claude -p "<prompt text>"`
+  - Gemini: `gemini -p "<prompt text>"`
+- Noted that Gemini still emits duplicate-skill conflict warnings in this environment, but it resolves the correct `external-ai` behavior.
