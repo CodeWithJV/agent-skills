@@ -6,6 +6,7 @@ These skills are designed to be readable, editable, and easy to install from a s
 
 ## Included skills
 
+- `automation-hitlist`
 - `call-external-ai`
 - `create-locked-down-skill`
 - `extract-scripts`
@@ -37,6 +38,8 @@ npx skills add codewithjv/agent-skills --skill extract-scripts
 
 ## What these are for
 
+- `automation-hitlist`
+  Interactively walk through the five-step method (map, rank, sketch, evaluate, hitlist) to find your highest-value AI automations, then keep the result as a living document: an automation hitlist (build now) and a learning hitlist (learn next).
 - `call-external-ai`
   Call Codex or Gemini for second opinions, reviews, and alternative perspectives.
 - `create-locked-down-skill`
