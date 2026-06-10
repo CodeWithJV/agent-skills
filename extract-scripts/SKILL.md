@@ -1,5 +1,5 @@
 ---
-name: skill-extract-scripts
+name: extract-scripts
 description: Review a skill and extract deterministic, mechanical steps into shell scripts. Makes skills more reliable by separating precision work (scripts) from judgment work (AI). Use when asked to extract scripts from a skill, make a skill more deterministic, or split a skill into script + prompt.
 ---
 

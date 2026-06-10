@@ -176,39 +176,36 @@ These must be practical, durable changes rather than reminders to "be more caref
 **NEVER save retro learnings to memory.** The only valid output artifacts are:
 
 - **Skills** - update an existing skill or create a new one (SKILL.md files)
-- **Formulas** - update an existing formula or create a new one (.formula.toml files)
 - **Docs** - markdown files committed to the repo (runbooks, checklists, reference docs)
+- **Scripts** - deterministic helpers committed to the repo
 
-Memory is not a valid destination for retro outcomes. If a learning isn't worth encoding into a skill, formula, or repo doc, it isn't worth persisting.
+Memory is not a valid destination for retro outcomes. If a learning isn't worth encoding into a skill, script, or repo doc, it isn't worth persisting.
 
 Valid changes include:
 
 - updating an existing skill's instructions or checklist
 - creating a new skill
-- updating a formula's steps
-- creating a new formula
 - adding a checklist or runbook as a markdown file in the repo
 - creating a CLI script committed to the repo
-- adding a review gate to a skill or formula
-- changing workflow sequencing in a skill or formula
+- adding a review gate to a skill, script, or runbook
+- changing workflow sequencing in a skill or repo doc
 
 For each suggestion, explain:
 
 - what should change
 - why it would help
 - whether it is high leverage or optional
-- what artifact should be updated (skill, formula, or repo doc)
+- what artifact should be updated (skill, script, or repo doc)
 - the exact file path where the change should be made
 
 ### Highest-Leverage Next Step
 
 End with the single most valuable change to make first.
 
-This must be one concrete change to a skill, formula, or repo doc, such as:
+This must be one concrete change to a skill, script, or repo doc, such as:
 - update a specific skill's SKILL.md
-- add a step or checklist to a formula
 - create a helper script in the repo
-- add a review or validation gate to a skill or formula
+- add a review or validation gate to a skill or runbook
 - write or update a runbook/checklist markdown file in the repo
 
 Do not end with vague advice like:
@@ -217,7 +214,7 @@ Do not end with vague advice like:
 - "communicate better"
 - "do better next time"
 
-The chosen next step must be a change to a skill, formula, or repo doc. Never memory.
+The chosen next step must be a change to a skill, script, or repo doc. Never memory.
 
 If you used iterative mode, the output should reflect what changed after questioning the user rather than ignoring their added signal.
 
@@ -228,5 +225,5 @@ If you used iterative mode, the output should reflect what changed after questio
 - Preserve what already works
 - Prefer structural fixes over one-off hacks
 - Be specific enough that the human could actually implement the suggestion
-- All recommendations must result in changes to skills, formulas, or repo docs — never memory
+- All recommendations must result in changes to skills, scripts, or repo docs — never memory
 - When the user's observations can materially improve the retro, engage them briefly before finalizing

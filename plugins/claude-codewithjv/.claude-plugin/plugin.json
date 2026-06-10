@@ -1,0 +1,11 @@
+{
+  "name": "codewithjv",
+  "description": "Reusable Code With JV workflow skills for retrospectives, skill improvement, and agentic coding practice.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Code With JV"
+  },
+  "repository": "https://github.com/codewithjv/agent-skills",
+  "homepage": "https://github.com/codewithjv/agent-skills",
+  "license": "MIT"
+}

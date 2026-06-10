@@ -4,6 +4,72 @@ Shared reusable agent skills for the Code With JV cohort.
 
 These skills are designed to be readable, editable, and easy to install from a shared repo.
 
+## Code With JV plugin
+
+The formal plugin namespace is `codewithjv`.
+
+Initial plugin skills:
+
+- `retro` - run a retrospective on a task or chat history to find mistakes, inefficiencies, root causes, and durable improvements.
+- `extract-scripts` - review a skill and extract deterministic, mechanical steps into portable shell scripts.
+
+Claude Code invocations:
+
+```text
+/codewithjv:retro
+/codewithjv:extract-scripts
+```
+
+Codex invocations:
+
+```text
+@codewithjv retro
+@codewithjv extract-scripts
+```
+
+### Claude Code plugin
+
+The Claude Code plugin lives at:
+
+```text
+plugins/claude-codewithjv
+```
+
+Test locally:
+
+```bash
+claude --plugin-dir ./plugins/claude-codewithjv
+```
+
+Then invoke:
+
+```text
+/codewithjv:retro
+/codewithjv:extract-scripts
+```
+
+Validate before release:
+
+```bash
+claude plugin validate ./plugins/claude-codewithjv
+```
+
+### Codex plugin
+
+The Codex plugin lives at:
+
+```text
+plugins/codex-codewithjv
+```
+
+It uses the `codewithjv` namespace and exposes the same two skills from this repo.
+
+Validate before release:
+
+```bash
+python3 ~/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py ./plugins/codex-codewithjv
+```
+
 ## Included skills
 
 - `automation-hitlist`

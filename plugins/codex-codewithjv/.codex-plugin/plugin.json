@@ -1,0 +1,36 @@
+{
+  "name": "codewithjv",
+  "version": "1.0.0",
+  "description": "Reusable Code With JV workflow skills for retrospectives, skill improvement, and agentic coding practice.",
+  "skills": "./skills/",
+  "author": {
+    "name": "Code With JV"
+  },
+  "repository": "https://github.com/codewithjv/agent-skills",
+  "homepage": "https://github.com/codewithjv/agent-skills",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "retrospective",
+    "workflow",
+    "scripts"
+  ],
+  "interface": {
+    "displayName": "Code With JV",
+    "shortDescription": "Workflow skills for retros and skill improvement.",
+    "longDescription": "Code With JV packages reusable workflow skills for improving agent work. Start with retrospectives, then extract reliable scripts from repeatable skill steps.",
+    "developerName": "Code With JV",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills",
+      "Workflow",
+      "Code"
+    ],
+    "websiteURL": "https://github.com/codewithjv/agent-skills",
+    "defaultPrompt": [
+      "Run a retro on this task.",
+      "Extract scripts from this skill."
+    ],
+    "brandColor": "#069494"
+  }
+}
