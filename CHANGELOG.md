@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Add an Antigravity plugin package with the published `plugin.json` layout.
+- Package `retro` and `extract-scripts` for Antigravity under `plugins/antigravity-codewithjv`.
+- Document Antigravity install and invocation paths.
+
 ## 1.0.1 - 2026-06-10
 
 - Add Claude and Codex marketplace files for GitHub-based distribution.

@@ -1,6 +1,6 @@
 ---
 name: call-external-ai
-description: Route natural-language prompts into external AI CLIs like Codex, Claude, and Gemini using safe command templates and minimal context handling.
+description: Route natural-language prompts into external AI CLIs like Codex, Claude, Gemini, Antigravity (agy), and Pi using safe command templates and minimal context handling.
 ---
 
 # External AI Skill
@@ -10,9 +10,9 @@ Invoke external AI CLI tools as a prompt gateway.
 ## When to Use
 
 Activate when the user:
-- Says `/call`, `/codex`, `/claude`, or `/gemini`
+- Says `/call`, `/codex`, `/claude`, `/gemini`, `/agy`, or `/pi`
 - Asks for a second opinion from another AI
-- Wants to run a prompt through a different CLI
+- Wants to run a prompt through a different CLI (like Codex, Claude, Gemini, Antigravity, or Pi)
 - Needs verification from a different model or tool
 
 ## Instructions
@@ -25,6 +25,9 @@ Examples:
 - "ask Codex for a second opinion on this patch" -> `codex exec "<prompt text>"`
 - "send this prompt to Claude" -> `claude -p "<prompt text>"`
 - "run this through Gemini with a specific model" -> `gemini -m <allowlisted-model> -p "<prompt text>"`
+- "send this prompt to agy" -> `agy -p "<prompt text>"`
+- "run this through local pi" -> `pi --provider lmstudio --model qwen/qwen3.6-35b-a3b -p "<prompt text>"`
+- "ask pi to check this" -> `pi -p "<prompt text>"`
 - "check this file for bugs" -> read the file directly, summarize only the minimum necessary context, and pass that context as plain prompt text without shell interpolation
 
 #### Allowed Command Patterns
@@ -35,9 +38,16 @@ Only use these command families:
 - `claude --model <model> -p "<prompt text>"`
 - `gemini -p "<prompt text>"`
 - `gemini -m <allowlisted-model> -p "<prompt text>"`
+- `agy -p "<prompt text>"`
+- `agy --print "<prompt text>"`
+- `pi -p "<prompt text>"`
+- `pi --provider lmstudio --model qwen/qwen3.6-35b-a3b -p "<prompt text>"`
+- `pi --provider <provider> --model <model> -p "<prompt text>"`
 - `codex --help`
 - `claude --help`
 - `gemini --help`
+- `agy --help`
+- `pi --help`
 
 Do not:
 - use shell substitution such as `$(...)` or backticks
@@ -79,10 +89,12 @@ If Gemini fails with `404` or `429` style model/capacity issues, retry with this
 ### Command Interface
 
 ```bash
-/call [codex|claude|gemini] <natural language request>
+/call [codex|claude|gemini|agy|pi] <natural language request>
 /codex <natural language request>
 /claude <natural language request>
 /gemini <natural language request>
+/agy <natural language request>
+/pi <natural language request>
 ```
 
 ### Routing Guidance
@@ -103,12 +115,25 @@ If Gemini fails with `404` or `429` style model/capacity issues, retry with this
 - For 403 auth issues, do not dump env; check only allowlisted var presence and retry with project vars unset
 - For 404/429 failures, continue through the fallback sequence automatically
 
+#### Antigravity (agy)
+- Use `agy -p` with plain prompt text
+- Run in print mode (non-interactive) to process and return the result cleanly
+- Keep the context minimal and avoid complex shell parameters
+
+#### Pi
+- By default, for local/LM Studio requests, use:
+  `pi --provider lmstudio --model qwen/qwen3.6-35b-a3b -p "<prompt text>"`
+- For standard or cloud-based requests, use `pi -p "<prompt text>"`
+- Ensure `--print` or `-p` is included to run non-interactively
+
 ### Context Gathering
 
 When a request needs context, gather it before invoking the external CLI:
 - "send this file to Codex" -> read the file directly in the current agent, extract only the minimum relevant context, and pass that summary as prompt text
 - "ask Gemini about this implementation" -> identify the relevant files and summarize only what is needed
 - "have Claude critique this design" -> gather the design context and pass only the relevant parts
+- "send this file to agy" -> read the file directly, extract the minimum necessary context, and pass as plain prompt text to agy
+- "ask local pi about this code" -> read the file, extract the relevant context, and pass as prompt text to the lmstudio command
 - "run this exact prompt" -> forward the prompt text directly without adding shell syntax
 
 Rules for context gathering:
@@ -120,7 +145,7 @@ Rules for context gathering:
 ### Process Flow
 
 1. Parse the natural language request
-2. Determine the target CLI (`codex`, `claude`, or `gemini`)
+2. Determine the target CLI (`codex`, `claude`, `gemini`, `agy`, or `pi`)
 3. Map the request to a safe command template for that CLI
 4. Execute the command
 5. If syntax error -> self-heal and retry

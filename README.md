@@ -27,6 +27,13 @@ Codex invocations:
 @codewithjv extract-scripts
 ```
 
+Antigravity invocations:
+
+```text
+/retro
+/extract-scripts
+```
+
 ### Claude Code plugin
 
 The Claude Code plugin lives at:
@@ -83,6 +90,47 @@ Validate before release:
 
 ```bash
 python3 ~/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py ./plugins/codex-codewithjv
+```
+
+### Antigravity plugin
+
+The Antigravity plugin lives at:
+
+```text
+plugins/antigravity-codewithjv
+```
+
+It uses Antigravity's published `plugin.json` package layout and exposes the same two skills from this repo.
+
+Install locally with Antigravity CLI:
+
+```bash
+agy plugin install ./plugins/antigravity-codewithjv
+```
+
+Then invoke the installed skills from the Antigravity prompt:
+
+```text
+/retro
+/extract-scripts
+```
+
+For workspace-level loading without the CLI installer, copy the contents of `plugins/antigravity-codewithjv` to:
+
+```text
+.agents/plugins/codewithjv
+```
+
+For global Antigravity loading, copy the contents to:
+
+```text
+~/.gemini/config/plugins/codewithjv
+```
+
+Validate before release:
+
+```bash
+agy plugin validate ./plugins/antigravity-codewithjv
 ```
 
 ## Included skills
