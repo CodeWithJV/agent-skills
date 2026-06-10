@@ -35,6 +35,13 @@ The Claude Code plugin lives at:
 plugins/claude-codewithjv
 ```
 
+Add this repo as a Claude Code marketplace:
+
+```text
+/plugin marketplace add CodeWithJV/agent-skills
+/plugin install codewithjv@codewithjv
+```
+
 Test locally:
 
 ```bash
@@ -63,6 +70,14 @@ plugins/codex-codewithjv
 ```
 
 It uses the `codewithjv` namespace and exposes the same two skills from this repo.
+
+Add this repo as a Codex marketplace:
+
+```bash
+codex plugin marketplace add CodeWithJV/agent-skills
+```
+
+Then open the Codex plugin directory and install `codewithjv` from the Code With JV marketplace.
 
 Validate before release:
 

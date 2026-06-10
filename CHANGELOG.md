@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1 - 2026-06-10
+
+- Add Claude and Codex marketplace files for GitHub-based distribution.
+- Replace plugin skill symlinks with copied skill directories so installed plugin caches are self-contained.
+
 ## 1.0.0 - 2026-06-10
 
 - Add the first formal `codewithjv` plugin packages for Claude Code and Codex.

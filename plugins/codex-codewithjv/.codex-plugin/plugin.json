@@ -1,6 +1,6 @@
 {
   "name": "codewithjv",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Reusable Code With JV workflow skills for retrospectives, skill improvement, and agentic coding practice.",
   "skills": "./skills/",
   "author": {
