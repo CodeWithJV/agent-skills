@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.1.0 - 2026-07-05
 
 - Add an Antigravity plugin package with the published `plugin.json` layout.
 - Package `retro` and `extract-scripts` for Antigravity under `plugins/antigravity-codewithjv`.
