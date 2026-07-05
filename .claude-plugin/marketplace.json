@@ -7,7 +7,7 @@
     {
       "name": "codewithjv",
       "source": "./plugins/claude-codewithjv",
-      "description": "Reusable Code With JV workflow skills for retrospectives, skill improvement, and agentic coding practice.",
+      "description": "Reusable Code With JV workflow skills for retrospectives, skill improvement, agentic coding practice, and planning/building/deploying websites.",
       "version": "1.0.1",
       "author": {
         "name": "Code With JV"
@@ -15,7 +15,7 @@
       "repository": "https://github.com/CodeWithJV/agent-skills",
       "license": "MIT",
       "category": "Productivity",
-      "tags": ["skills", "retrospective", "workflow", "scripts"]
+      "tags": ["skills", "retrospective", "workflow", "scripts", "website"]
     }
   ]
 }

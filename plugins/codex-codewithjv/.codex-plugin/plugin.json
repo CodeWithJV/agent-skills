@@ -1,7 +1,7 @@
 {
   "name": "codewithjv",
   "version": "1.0.1",
-  "description": "Reusable Code With JV workflow skills for retrospectives, skill improvement, and agentic coding practice.",
+  "description": "Reusable Code With JV workflow skills for retrospectives, skill improvement, agentic coding practice, and planning/building/deploying websites.",
   "skills": "./skills/",
   "author": {
     "name": "Code With JV"
@@ -13,12 +13,13 @@
     "skills",
     "retrospective",
     "workflow",
-    "scripts"
+    "scripts",
+    "website"
   ],
   "interface": {
     "displayName": "Code With JV",
-    "shortDescription": "Workflow skills for retros and skill improvement.",
-    "longDescription": "Code With JV packages reusable workflow skills for improving agent work. Start with retrospectives, then extract reliable scripts from repeatable skill steps.",
+    "shortDescription": "Workflow skills for retros, skill improvement, and building websites.",
+    "longDescription": "Code With JV packages reusable workflow skills for improving agent work. Start with retrospectives, then extract reliable scripts from repeatable skill steps. Also includes a chained plan/build/deploy workflow for taking a non-technical user from an idea to a live website.",
     "developerName": "Code With JV",
     "category": "Productivity",
     "capabilities": [
@@ -29,7 +30,8 @@
     "websiteURL": "https://github.com/codewithjv/agent-skills",
     "defaultPrompt": [
       "Run a retro on this task.",
-      "Extract scripts from this skill."
+      "Extract scripts from this skill.",
+      "Help me plan a website."
     ],
     "brandColor": "#069494"
   }

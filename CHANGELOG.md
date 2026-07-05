@@ -5,6 +5,8 @@
 - Add an Antigravity plugin package with the published `plugin.json` layout.
 - Package `retro` and `extract-scripts` for Antigravity under `plugins/antigravity-codewithjv`.
 - Document Antigravity install and invocation paths.
+- Add `plan-website`, `build-website`, and `deploy-website` - a chained skillset that walks a non-technical user from an idea to a live site on Netlify or Vercel.
+- Ship the new website skills as root skill folders (`npx skills add`) and package them into all three `codewithjv` plugin variants (Claude Code, Codex, Antigravity).
 
 ## 1.0.1 - 2026-06-10
 
