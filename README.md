@@ -157,6 +157,7 @@ agy plugin validate ./plugins/antigravity-codewithjv
 - `deploy-website`
 - `extract-scripts`
 - `plan-website`
+- `pr-review-panel`
 - `review-context-hub`
 - `retro`
 
@@ -184,6 +185,7 @@ npx skills add codewithjv/agent-skills --skill extract-scripts
 npx skills add codewithjv/agent-skills --skill plan-website
 npx skills add codewithjv/agent-skills --skill build-website
 npx skills add codewithjv/agent-skills --skill deploy-website
+npx skills add codewithjv/agent-skills --skill pr-review-panel
 ```
 
 ## What these are for
@@ -194,6 +196,8 @@ npx skills add codewithjv/agent-skills --skill deploy-website
   Call Codex or Gemini for second opinions, reviews, and alternative perspectives.
 - `create-locked-down-skill`
   Scaffold a new workflow directory with locked-down permissions. Creates a `.claude/settings.local.json` that restricts tools to only what's needed, plus a `CLAUDE.md` with workflow instructions. Great for sandboxed, restricted workspaces.
+- `pr-review-panel`
+  Run a two-model code review panel over a pull request - two independent reviewers on the same diff, consolidated into one review, posted only after the operator approves the text.
 - `review-context-hub`
   Review a repo as a context hub: structure, recent changes, instructions, skills, remotes, and access.
 - `extract-scripts`
